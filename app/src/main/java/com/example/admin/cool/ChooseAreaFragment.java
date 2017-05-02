@@ -98,7 +98,7 @@ public class ChooseAreaFragment extends Fragment{
                     queryCities();
                 }else if (currentLevel==LEVEL_CITY){
                     selectedCity = cityList.get(position);
-                     queryProvince();
+                     queryCounties();
                 }
             }
         });
@@ -106,7 +106,7 @@ public class ChooseAreaFragment extends Fragment{
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentLevel == LEVEL_PROVINCE){
+                if (currentLevel == LEVEL_COUNTY){
                 queryCities();
                 }else if (currentLevel==LEVEL_CITY){
                   queryProvince();
@@ -123,7 +123,6 @@ public class ChooseAreaFragment extends Fragment{
      private  void queryProvince(){
          titleText.setText("中国");
          backButton.setVisibility(View.GONE);
-         provincelist =
          provincelist = DataSupport.findAll(Province.class);
          if (provincelist.size()>0){
              dataList.clear();
@@ -147,14 +146,14 @@ public class ChooseAreaFragment extends Fragment{
     public  void  queryCities(){
         titleText.setText(selectedProvince.getProvinceName());
         backButton.setVisibility(View.VISIBLE);
-        cityList = DataSupport.where("provinceid=?",String.valueOf(selectedProvince.getId())).find(City.class);
+        cityList = DataSupport.where("provinceId=?",String.valueOf(selectedProvince.getId())).find(City.class);
         if (cityList.size()>0){
             dataList.clear();
             for (City city:cityList){
                 dataList.add(city.getCityName());
             }
             adapter.notifyDataSetChanged();
-            listView.setSelection(1);
+            listView.setSelection(0);
             currentLevel = LEVEL_CITY;
 
         }else {
@@ -171,14 +170,14 @@ public class ChooseAreaFragment extends Fragment{
     private void queryCounties(){
         titleText.setText(selectedCity.getCityName());
         backButton.setVisibility(View.VISIBLE);
-        countyList = DataSupport.where("cityid=?",String.valueOf(selectedCity.getId())).find(County.class);
+        countyList = DataSupport.where("cityId=?",String.valueOf(selectedCity.getId())).find(County.class);
         if (countyList.size()>0){
             dataList.clear();
             for (County county:countyList){
                 dataList.add(county.getCountyName());
             }
             adapter.notifyDataSetChanged();
-            listView.setSelection(2);
+            listView.setSelection(0);
             currentLevel=LEVEL_COUNTY;
         }else{
             int provinceCode = selectedProvince.getProvinceCode();
