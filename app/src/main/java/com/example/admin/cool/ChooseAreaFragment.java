@@ -49,7 +49,7 @@ public class ChooseAreaFragment extends Fragment{
     /**
      * 省列表
      */
-    private List<Province> provincelist;
+    private List<Province> provinceList;
 
     /**
      * 市列表
@@ -95,7 +95,7 @@ public class ChooseAreaFragment extends Fragment{
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (currentLevel == LEVEL_PROVINCE){
-                    selectedProvince = provincelist.get(position);
+                    selectedProvince = provinceList.get(position);
                     queryCities();
                 }else if (currentLevel==LEVEL_CITY){
                     selectedCity = cityList.get(position);
@@ -131,10 +131,10 @@ public class ChooseAreaFragment extends Fragment{
          titleText.setText("中国");
 //         Toast.makeText(getContext(),"加载成功",Toast.LENGTH_SHORT).show();
          backButton.setVisibility(View.GONE);
-         provincelist = DataSupport.findAll(Province.class);
-         if (provincelist.size()>0){
+         provinceList = DataSupport.findAll(Province.class);
+         if (provinceList.size()>0){
              dataList.clear();
-             for(Province province:provincelist){
+             for(Province province:provinceList){
                  dataList.add(province.getProvinceName());
              }
              adapter.notifyDataSetChanged();
@@ -154,7 +154,7 @@ public class ChooseAreaFragment extends Fragment{
     public  void  queryCities(){
         titleText.setText(selectedProvince.getProvinceName());
         backButton.setVisibility(View.VISIBLE);
-        cityList = DataSupport.where("provinceId=?",String.valueOf(selectedProvince.getId())).find(City.class);
+        cityList = DataSupport.where("provinceid = ?",String.valueOf(selectedProvince.getId())).find(City.class);
         if (cityList.size()>0){
             dataList.clear();
             for (City city:cityList){
@@ -178,7 +178,7 @@ public class ChooseAreaFragment extends Fragment{
     private void queryCounties(){
         titleText.setText(selectedCity.getCityName());
         backButton.setVisibility(View.VISIBLE);
-        countyList = DataSupport.where("cityId=?",String.valueOf(selectedCity.getId())).find(County.class);
+        countyList = DataSupport.where("cityid = ?",String.valueOf(selectedCity.getId())).find(County.class);
         if (countyList.size()>0){
             dataList.clear();
             for (County county:countyList){
@@ -260,8 +260,10 @@ public class ChooseAreaFragment extends Fragment{
             dialog.setCanceledOnTouchOutside(false);
             dialog弹出后会点击屏幕，dialog不消失；点击物理返回键dialog消失*/
             progressDialog.setCanceledOnTouchOutside(false);
-            progressDialog.show();
+//            progressDialog.setCancelable(false);
+
         }
+        progressDialog.show();
     }
 
     private  void closeProgressDialog(){
