@@ -65,7 +65,7 @@ public class WeatherActivity extends AppCompatActivity {
         setContentView(R.layout.activity_weather);
        //切换城市
         drawerLayout = (DrawerLayout) findViewById(R.id.draw_layout);
-        navButton  = (Button) findViewById(R.id.choose_area_fragment);
+        navButton  = (Button) findViewById(R.id.nav_button);
         navButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
