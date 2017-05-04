@@ -5,10 +5,14 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -38,24 +42,38 @@ public class WeatherActivity extends AppCompatActivity {
     private TextView pm25Text;
     private TextView comfortText;
     private TextView carWashText;
-    private TextView sporttext;
+    private TextView sportText;
     private ImageView bingPicImg;
-
-    private SwipeRefreshLayout swipeRefresh;
+//手动刷新天气
+    public SwipeRefreshLayout swipeRefresh;
     private  String mWeatherId;
+    //切换城市
+    public DrawerLayout drawerLayout;
+    private Button navButton;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (Build.VERSION.SDK_INT>=21){
             View decorView = getWindow().getDecorView();
             decorView.setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_FULLSCREEN|
-                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-            );
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|
+                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
         setContentView(R.layout.activity_weather);
-
+       //切换城市
+        drawerLayout = (DrawerLayout) findViewById(R.id.draw_layout);
+        navButton  = (Button) findViewById(R.id.choose_area_fragment);
+        navButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //打开滑动菜单
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
+        //刷新天气
         swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
         bingPicImg = (ImageView) findViewById(R.id.bing_pic_img);
@@ -69,7 +87,7 @@ public class WeatherActivity extends AppCompatActivity {
         pm25Text = (TextView) findViewById(R.id.pm25_text);
         comfortText = (TextView) findViewById(R.id.comfort_text);
         carWashText = (TextView) findViewById(R.id.car_wash_text);
-        sporttext = (TextView) findViewById(R.id.sport_text);
+        sportText = (TextView) findViewById(R.id.sport_text);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString = prefs.getString("weather",null);
         String bingPic = prefs.getString("bingPic",null);
@@ -104,7 +122,8 @@ public class WeatherActivity extends AppCompatActivity {
      * 根据天气id请求城市天气
      */
     public void requestWeather(final String weatherId){
-        String weatherUrl = "http://guolin.tech/api/weather?cityid="+weatherId+"&key = 1252430476344b60a7e6432592b29ddd";
+        String weatherUrl = "http://guolin.tech/api/weather?cityid="+weatherId+"&key=1252430476344b60a7e6432592b29ddd";
+        Log.d("TAG", "weatherUrl :"+weatherUrl);
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -122,6 +141,7 @@ public class WeatherActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
             final  String responseText = response.body().string();
+                Log.d("TAG", "onResponse: "+responseText);
                 final  Weather weather = Utility.handWeatherResponse(responseText);
                 runOnUiThread(new Runnable() {
                     @Override
@@ -176,7 +196,7 @@ public class WeatherActivity extends AppCompatActivity {
         String sport = "运动建议: "+weather.suggestion.sport.info;
         comfortText.setText(comfort);
         carWashText.setText(carWash);
-        sporttext.setText(sport);
+        sportText.setText(sport);
         weatherLayout.setVisibility(View.VISIBLE);
 
     }
